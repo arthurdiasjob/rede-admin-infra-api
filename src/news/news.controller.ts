@@ -24,6 +24,7 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { NewsService } from './news.service';
 import { CreateNewsDto } from './dto/create-news.dto';
 import { UpdateNewsDto } from './dto/update-news.dto';
+import { CliqueResponseDto } from './dto/clique-response.dto';
 
 @ApiTags('news')
 @Controller('news')
@@ -115,5 +116,35 @@ export class NewsController {
       throw new HttpException('Notícia não encontrada', HttpStatus.NOT_FOUND);
     }
     return { message: 'Notícia removida com sucesso' };
+  }
+
+  @Patch(':id/clique')
+  @ApiOperation({ summary: 'Incrementar contador de cliques da notícia' })
+  @ApiParam({ name: 'id', description: 'ID da notícia' })
+  @ApiResponse({
+    status: 200,
+    description: 'Clique contabilizado com sucesso',
+    type: CliqueResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Notícia não encontrada' })
+  async incrementarClique(@Param('id') id: string) {
+    try {
+      const news = await this.newsService.incrementarCliques(id);
+      if (!news) {
+        throw new HttpException('Notícia não encontrada', HttpStatus.NOT_FOUND);
+      }
+      return {
+        message: 'Clique contabilizado com sucesso',
+        cliques: news.cliques,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new HttpException(
+        'Erro interno do servidor',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }

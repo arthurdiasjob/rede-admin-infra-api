@@ -34,11 +34,15 @@ async function bootstrap() {
   // Configurar Swagger
   const config = new DocumentBuilder()
     .setTitle('API Rede')
-    .setDescription('API para gerenciar usuários e notícias')
+    .setDescription(
+      'API para gerenciar usuários, notícias, módulos e logomarcas',
+    )
     .setVersion('1.0')
     .addTag('auth', 'Autenticação e autorização')
     .addTag('users', 'Operações relacionadas aos usuários')
     .addTag('news', 'Operações relacionadas às notícias')
+    .addTag('modules', 'Operações relacionadas aos módulos')
+    .addTag('logos', 'Operações relacionadas às logomarcas')
     .addBearerAuth()
     .build();
 
@@ -48,6 +52,7 @@ async function bootstrap() {
   // Configurar timeout do servidor (5 minutos para uploads grandes)
   const port = process.env.PORT || 3000;
   const server = await app.listen(port);
+
   server.setTimeout(300000); // 5 minutos
   console.log(`🚀 API rodando na porta ${port}`);
   console.log(
@@ -60,10 +65,26 @@ async function bootstrap() {
   console.log('   GET    /users/:id (🔒 JWT)');
   console.log('   PATCH  /users/:id (🔒 JWT)');
   console.log('   DELETE /users/:id (🔒 JWT)');
+  console.log('   GET    /users/:id/modules (🔒 JWT)');
+  console.log('   POST   /users/:id/modules (🔒 JWT)');
+  console.log('   PATCH  /users/:id/modules/:moduleId (🔒 JWT)');
+  console.log('   DELETE /users/:id/modules/:moduleId (🔒 JWT)');
   console.log('   GET    /news');
   console.log('   POST   /news (🔒 JWT)');
   console.log('   GET    /news/:id');
   console.log('   PATCH  /news/:id (🔒 JWT)');
   console.log('   DELETE /news/:id (🔒 JWT)');
+  console.log('   PATCH  /news/:id/clique');
+  console.log('   GET    /modules');
+  console.log('   POST   /modules (🔒 JWT)');
+  console.log('   GET    /modules/:id');
+  console.log('   PATCH  /modules/:id (🔒 JWT)');
+  console.log('   DELETE /modules/:id (🔒 JWT)');
+  console.log('   GET    /logos');
+  console.log('   POST   /logos (🔒 JWT)');
+  console.log('   GET    /logos/:id');
+  console.log('   PATCH  /logos/:id (🔒 JWT)');
+  console.log('   DELETE /logos/:id (🔒 JWT)');
 }
-bootstrap();
+
+void bootstrap();

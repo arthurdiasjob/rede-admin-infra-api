@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './schemas/user.schema';
+import { User, UserDocument, UserModule } from './schemas/user.schema';
+import { AddModuleToUserDto, UpdateUserModuleDto } from './dto/user-module.dto';
 import * as bcrypt from 'bcryptjs';
 
 @Injectable()
@@ -45,5 +46,80 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<UserDocument | null> {
     return this.userModel.findOne({ email }).exec();
+  }
+
+  // Métodos para gerenciar módulos do usuário
+  async addModuleToUser(
+    userId: string,
+    addModuleDto: AddModuleToUserDto,
+    moduleTitle: string,
+  ): Promise<User | null> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    // Verificar se o módulo já existe para o usuário
+    const existingModule = user.modulos?.find(
+      (m) => m.moduleId === addModuleDto.moduleId,
+    );
+    if (existingModule) {
+      // Se já existe, apenas reativar
+      existingModule.ativo = true;
+    } else {
+      // Adicionar novo módulo
+      const newModule: UserModule = {
+        moduleId: addModuleDto.moduleId,
+        titulo: moduleTitle,
+        ativo: true,
+      };
+      user.modulos = user.modulos || [];
+      user.modulos.push(newModule);
+    }
+
+    return await user.save();
+  }
+
+  async removeModuleFromUser(
+    userId: string,
+    moduleId: string,
+  ): Promise<User | null> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    user.modulos = user.modulos?.filter((m) => m.moduleId !== moduleId) || [];
+    return await user.save();
+  }
+
+  async updateUserModule(
+    userId: string,
+    moduleId: string,
+    updateModuleDto: UpdateUserModuleDto,
+  ): Promise<User | null> {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    const moduleIndex = user.modulos?.findIndex((m) => m.moduleId === moduleId);
+    if (moduleIndex === -1 || moduleIndex === undefined) {
+      throw new NotFoundException('Módulo não encontrado para este usuário');
+    }
+
+    if (user.modulos) {
+      user.modulos[moduleIndex].ativo = updateModuleDto.ativo;
+    }
+
+    return await user.save();
+  }
+
+  async getUserModules(userId: string): Promise<UserModule[]> {
+    const user = await this.userModel.findById(userId).select('modulos');
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+    return user.modulos || [];
   }
 }

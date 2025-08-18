@@ -1,5 +1,15 @@
-import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsString,
+  MinLength,
+  IsOptional,
+  IsArray,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
+import { UserModuleDto } from './user-module.dto';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'Nome do usuário', example: 'João Silva' })
@@ -20,4 +30,15 @@ export class CreateUserDto {
   @IsString()
   @MinLength(6)
   senha: string;
+
+  @ApiProperty({
+    description: 'Módulos disponíveis para o usuário',
+    type: [UserModuleDto],
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => UserModuleDto)
+  modulos?: UserModuleDto[];
 }

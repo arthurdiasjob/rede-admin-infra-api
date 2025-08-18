@@ -34,6 +34,9 @@ export class News {
 
   @Prop({ default: Date.now })
   dataCadastro: Date;
+
+  @Prop({ default: 0 })
+  cliques: number;
 }
 
 export const NewsSchema = SchemaFactory.createForClass(News);

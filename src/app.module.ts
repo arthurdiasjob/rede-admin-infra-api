@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { UsersModule } from './users/users.module';
 import { NewsModule } from './news/news.module';
 import { AuthModule } from './auth/auth.module';
+import { ModulesModule } from './modules/modules.module';
+import { LogosModule } from './logos/logos.module';
 
 @Module({
   imports: [
@@ -13,11 +15,13 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(
-      'mongodb+srv://guilhermenivia:pL8QeKCKiN6s468w@rede-cms.kbzess1.mongodb.net/rede?retryWrites=true&w=majority&appName=rede-cms',
+      'mongodb+srv://departamentoti:uXPbEsmVPwNthKwZ@rede.wsc7ezr.mongodb.net/?retryWrites=true&w=majority&appName=rede',
     ),
     UsersModule,
     NewsModule,
     AuthModule,
+    ModulesModule,
+    LogosModule,
   ],
   controllers: [AppController],
   providers: [AppService],

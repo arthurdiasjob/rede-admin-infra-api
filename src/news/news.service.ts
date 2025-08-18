@@ -52,4 +52,11 @@ export class NewsService {
       .populate('usuarioCadastro', 'nome email')
       .exec();
   }
+
+  async incrementarCliques(id: string): Promise<News | null> {
+    return this.newsModel
+      .findByIdAndUpdate(id, { $inc: { cliques: 1 } }, { new: true })
+      .populate('usuarioCadastro', 'nome email')
+      .exec();
+  }
 }

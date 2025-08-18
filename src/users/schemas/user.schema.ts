@@ -1,7 +1,13 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export type UserDocument = User & Document;
+
+export interface UserModule {
+  moduleId: string;
+  titulo: string;
+  ativo: boolean;
+}
 
 @Schema({
   collection: 'users',
@@ -16,6 +22,18 @@ export class User {
 
   @Prop({ required: true })
   senha: string;
+
+  @Prop({
+    type: [
+      {
+        moduleId: { type: Types.ObjectId, ref: 'Module' },
+        titulo: String,
+        ativo: { type: Boolean, default: true },
+      },
+    ],
+    default: [],
+  })
+  modulos: UserModule[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
